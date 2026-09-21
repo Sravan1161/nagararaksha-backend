@@ -10,3 +10,4 @@ python-multipart>=0.0.9
 pillow>=10.3
 anthropic>=0.34
 python-dotenv>=1.0
+itsdangerous>=2.2
