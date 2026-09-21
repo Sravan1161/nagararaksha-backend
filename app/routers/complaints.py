@@ -13,6 +13,7 @@ from app.models import (
 )
 from app.schemas import ComplaintOut, ComplaintUpdate
 from app.services.ai_classify import classify_photo
+from app.services.auth import require_staff
 from app.services.storage import photo_path_from_url, save_photo
 
 router = APIRouter(prefix="/complaints", tags=["complaints"])
@@ -163,7 +164,12 @@ def get_complaint(complaint_id: str, db: Session = Depends(get_db)):
 
 
 @router.patch("/{complaint_id}", response_model=ComplaintOut)
-def update_complaint(complaint_id: str, patch: ComplaintUpdate, db: Session = Depends(get_db)):
+def update_complaint(
+    complaint_id: str,
+    patch: ComplaintUpdate,
+    db: Session = Depends(get_db),
+    _staff=Depends(require_staff),
+):
     c = db.query(Complaint).filter(Complaint.id == complaint_id).first()
     if not c:
         raise HTTPException(404, "Complaint not found")
@@ -179,7 +185,12 @@ def update_complaint(complaint_id: str, patch: ComplaintUpdate, db: Session = De
 
 
 @router.post("/{complaint_id}/resolve", response_model=ComplaintOut)
-def resolve_complaint(complaint_id: str, after_photo: UploadFile, db: Session = Depends(get_db)):
+def resolve_complaint(
+    complaint_id: str,
+    after_photo: UploadFile,
+    db: Session = Depends(get_db),
+    _staff=Depends(require_staff),
+):
     """Marking a complaint resolved always requires proof-of-cleanup photo evidence."""
     c = db.query(Complaint).filter(Complaint.id == complaint_id).first()
     if not c:
