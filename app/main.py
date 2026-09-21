@@ -7,7 +7,7 @@ from sqlalchemy import text
 
 from app.config import settings
 from app.database import Base, engine
-from app.routers import complaints, hotspots, wards
+from app.routers import auth, complaints, hotspots, wards
 
 logging.basicConfig(level=logging.INFO)
 
@@ -39,6 +39,7 @@ app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads"
 app.include_router(wards.router)
 app.include_router(complaints.router)
 app.include_router(hotspots.router)
+app.include_router(auth.router)
 
 
 @app.get("/health")
